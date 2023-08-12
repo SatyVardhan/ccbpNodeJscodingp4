@@ -59,4 +59,39 @@ app.post("/players/", async (request, response) => {
   response.send("Player Added to Team");
 });
 
+// API 3 returns a player based on a player ID
+
+app.get("/players/:playerId/", async (request, response) => {
+  const { playerId } = request.params;
+  const getPlayerDetails = `SELECT * FROM cricket_team
+     WHERE player_id = ${playerId};`;
+  const playerArray = await cDB.all(getPlayerDetails);
+  response.send(playerArray);
+});
+
+// API 4 update player details in the team based on player ID
+
+app.put("/players/:playerId/", async (request, response) => {
+  const playerDetails = request.body;
+  const { playerId } = request.params;
+  const { playerName, jerseyNumber, role } = playerDetails;
+  const updateQuery = `UPDATE cricket_team 
+    SET player_name = ${playerName},
+        jersey_number = ${jerseyNumber}
+        role = ${role}
+        WHERE player_id = ${playerId};`;
+  await cDB.run(updateQuery);
+  response.send("Player Details Updated");
+});
+
+// API 5 Delete a player from team based on player ID
+
+app.delete("/players/:playerId/", async (request, response) => {
+  const { playerId } = request.params;
+  const deleteQuery = `DELETE FROM cricket_team 
+    WHERE player_id = ${playerId};`;
+  await cDB.run(deleteQuery);
+  response.send("Player Removed");
+});
+
 module.exports = app;
