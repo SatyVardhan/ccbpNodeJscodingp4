@@ -23,19 +23,36 @@ initializeServerAndServer();
 
 // AP1 should return list of players
 app.get("/players/", async (request, response) => {
-  const convertSnakecaseToCamelcase = (playerObject) => {
+  const convertDbObjectToResponseObject = (dbObject) => {
     return {
-      playerId: playerObject.player_Id,
-      playerName: playerObject.player_name,
-      jerseyNumber: playerObject.jerser_number,
-      role: playerObject.role,
+      playerId: dbObject.player_id,
+      playerName: dbObject.player_name,
+      jerseyNumber: dbObject.jersey_number,
+      role: dbObject.role,
     };
   };
-  const getAllPlayersListQuery = `SELECT * FROM cricket_team`;
+  //   const getPlayersQuery = `
+  //     SELECT
+  //     *
+  //     FROM
+  //     cricket_team;`;
+  //   const playersArray = await cDB.all(getPlayersQuery);
+  //   response.send(
+  //     playersArray.map((eachPlayer) =>
+  //       convertDbObjectToResponseObject(eachPlayer)
+  //     )
+  //   );
+  // });
+  // /////////
+
+  const getAllPlayersListQuery = `SELECT
+   *
+    FROM
+     cricket_team;`;
   const playerList = await cDB.all(getAllPlayersListQuery);
-  response.send(
-    playerList.map((eachPlayer) => {
-      convertSnakecaseToCamelcase(eachPlayer);
-    })
+  let camcasPlayerList = playerList.map((eachPlayer) =>
+    convertDbObjectToResponseObject(eachPlayer)
   );
+  response.send(camcasPlayerList);
 });
+module.exports = app;
