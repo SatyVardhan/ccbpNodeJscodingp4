@@ -20,3 +20,22 @@ const initializeServerAndServer = async () => {
   }
 };
 initializeServerAndServer();
+
+// AP1 should return list of players
+app.get("/players/", async (request, response) => {
+  const convertSnakecaseToCamelcase = (playerObject) => {
+    return {
+      playerId: playerObject.player_Id,
+      playerName: playerObject.player_name,
+      jerseyNumber: playerObject.jerser_number,
+      role: playerObject.role,
+    };
+  };
+  const getAllPlayersListQuery = `SELECT * FROM cricket_team`;
+  const playerList = await cDB.all(getAllPlayersListQuery);
+  response.send(
+    playerList.map((eachPlayer) => {
+      convertSnakecaseToCamelcase(eachPlayer);
+    })
+  );
+});
