@@ -3,6 +3,7 @@ const { open } = require("sqlite");
 const path = require("path");
 const sqlite3 = require("sqlite3");
 const app = express();
+app.use(express.json());
 const dbpath = path.join(__dirname, "cricketTeam.db");
 let cDB = null;
 const initializeServerAndServer = async () => {
@@ -31,19 +32,6 @@ app.get("/players/", async (request, response) => {
       role: dbObject.role,
     };
   };
-  //   const getPlayersQuery = `
-  //     SELECT
-  //     *
-  //     FROM
-  //     cricket_team;`;
-  //   const playersArray = await cDB.all(getPlayersQuery);
-  //   response.send(
-  //     playersArray.map((eachPlayer) =>
-  //       convertDbObjectToResponseObject(eachPlayer)
-  //     )
-  //   );
-  // });
-  // /////////
 
   const getAllPlayersListQuery = `SELECT
    *
@@ -55,4 +43,20 @@ app.get("/players/", async (request, response) => {
   );
   response.send(camcasPlayerList);
 });
+
+// second API create a new player in team to create
+//  we have to read request body by using middle ware express.json
+// http method get and sql method run
+app.post("/players/", async (request, response) => {
+  const playerDetails = request.body;
+  const { playerName, jerseyNumber, role } = playerDetails;
+  const createNewPlayerQuery = `INSERT
+    INTO
+    cricket_team (player_name,jersey_number,role)
+    VALUES (${playerName},${jerseyNumber},${role});
+    `;
+  const cDBResponse = await cDB.run(createNewPlayerQuery);
+  response.send("Player Added to Team");
+});
+
 module.exports = app;
