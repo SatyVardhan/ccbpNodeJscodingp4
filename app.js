@@ -75,11 +75,12 @@ app.put("/players/:playerId/", async (request, response) => {
   const playerDetails = request.body;
   const { playerId } = request.params;
   const { playerName, jerseyNumber, role } = playerDetails;
+
   const updateQuery = `UPDATE cricket_team 
     SET player_name = '${playerName}',
-        jersey_number = ${jerseyNumber}
-        role = ${role}
-        WHERE player_id = ${playerId};`;
+        jersey_number = ${jerseyNumber},
+        role = '${role}'
+        WHERE player_id = ${playerId};`; //updated sql query
   await cDB.run(updateQuery);
   response.send("Player Details Updated");
 });
@@ -87,11 +88,15 @@ app.put("/players/:playerId/", async (request, response) => {
 // API 5 Delete a player from team based on player ID
 
 app.delete("/players/:playerId/", async (request, response) => {
-  const { playerId } = request.params;
-  const deleteQuery = `DELETE FROM cricket_team 
+  try {
+    const { playerId } = request.params;
+    const deleteQuery = `DELETE FROM cricket_team 
     WHERE player_id = ${playerId};`;
-  await cDB.run(deleteQuery);
-  response.send("Player Removed");
+    await cDB.run(deleteQuery);
+    response.send("Player Removed");
+  } catch (e) {
+    console.log(`DATABASE ERROR:${e.message}`);
+  }
 });
 
 module.exports = app;
