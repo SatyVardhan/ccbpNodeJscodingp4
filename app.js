@@ -63,10 +63,21 @@ app.post("/players/", async (request, response) => {
 
 app.get("/players/:playerId/", async (request, response) => {
   const { playerId } = request.params;
+  const convertDbObjectToResponseObject = (dbObject) => {
+    return {
+      playerId: dbObject.player_id,
+      playerName: dbObject.player_name,
+      jerseyNumber: dbObject.jersey_number,
+      role: dbObject.role,
+    };
+  };
   const getPlayerDetails = `SELECT * FROM cricket_team
      WHERE player_id = ${playerId};`;
   const playerArray = await cDB.all(getPlayerDetails);
-  response.send(playerArray);
+  console.log(playerArray);
+  const boblist = convertDbObjectToResponseObject(playerArray);
+  console.log(boblist);
+  response.send(boblist);
 });
 
 // API 4 update player details in the team based on player ID
